@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+
+<body>
+  <main>
+    <div class="table-container">
+      <table class="table">
+        <table class="table is-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User ID</th>
+              <th>First name</th>
+              <th>Last name</th>
+              <th>Username</th>
+              <th>User Phone</th>
+              <th>User Aim</th>
+              <th>User Money Aim</th>
+              <th>User Requisites</th>
+              <th>User Balance</th>
+              <th>User Recieved</th>
+              <th>Payed Subscription</th>
+              <th>User Remaining Days</th>
+            </tr>
+          </thead>
+          <tbody id="dynamic-table">
+
+          </tbody>
+        </table>
+      </table>
+    </div>
+    <div>
+
+      <div class="field">
+        <div class="control is-loading">
+          <input class="input is-rounded is-info" type="text" placeholder="Введите номер" name="id-input" id="id-input">
+        </div>
+      </div>
+      <button class="button is-small is-fullwidth is-rounded" type="submit" onclick="sendPhone(document.getElementById('id-input').value);">Send</button>
+    </div>
+  </main>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.1/qs.min.js"></script>
+  <script>
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+
+    function apiPost(requestBody, config, url) {
+      return axios.post(url, Qs.stringify(requestBody), config)
+    }
+
+    function getBotUsers() {
+      const requestBody = {
+        tablename: 'bot_users'
+      }
+      apiPost(requestBody, config, '/get')
+        .then((result) => {
+          renderTable(result.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
+    function renderTable(data) {
+      for (let i = 0; i < data.length; i++) {
+        document.getElementById('dynamic-table').innerHTML += `
+                                                              <td>${data[i].id}</td>
+                                                              <td>${data[i].user_id}</td>
+                                                              <td>${data[i].first_name}</td>
+                                                              <td>${data[i].last_name}</td>
+                                                              <td>${data[i].username}</td>
+                                                              <td>${data[i].user_full_name}</td>
+                                                              <td>${data[i].user_phone}</td>
+                                                              <td>${data[i].user_aim}</td>
+                                                              <td>${data[i].user_money_aim}</td>
+                                                              <td>${data[i].user_requisites}</td>
+                                                              <td>${data[i].user_balance}</td>
+                                                              <td>${data[i].user_recieved}</td>
+                                                              <td>${data[i].payed_subscription}</td>
+                                                              `
+      }
+    }
+
+    function sendPhone(user_phone) {
+      const requestBody = {
+        phone: user_phone
+      }
+      apiPost(requestBody, config, '/update')
+        .then((result) => {
+          console.log(result)
+        })
+        .catch((err) => {
+          console.log(err)
+      })
+    }
+
+    getBotUsers()
+  </script>
+
+</body>
+
+</html>
